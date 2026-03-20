@@ -1,0 +1,60 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <radialGradient id="bgGlow" cx="50%" cy="65%" r="45%">
+    <stop offset="0%" stop-color="#ff6b00" stop-opacity="0.4"/>
+    <stop offset="100%" stop-color="#ff6b00" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="bgGlow2" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#0088ff" stop-opacity="0.25"/>
+    <stop offset="100%" stop-color="#0088ff" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="coreGlow" cx="50%" cy="70%" r="40%">
+    <stop offset="0%" stop-color="#ff8800" stop-opacity="0.9"/>
+    <stop offset="60%" stop-color="#ff4400" stop-opacity="0.4"/>
+    <stop offset="100%" stop-color="#ff4400" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+
+<rect width="512" height="512" rx="112" fill="#0a1628"/>
+<rect width="512" height="512" rx="112" fill="none" stroke="#ff6b00" stroke-width="8"/>
+
+<!-- グロー -->
+<ellipse cx="256" cy="430" rx="140" ry="24" fill="#ff6b00" fill-opacity="0.2"/>
+<ellipse cx="256" cy="280" rx="170" ry="200" fill="url(#bgGlow2)"/>
+<ellipse cx="256" cy="360" rx="145" ry="120" fill="url(#bgGlow)"/>
+
+<!-- 外炎・左 -->
+<path d="M185 420 C138 390 118 345 122 292 C126 260 140 234 158 210 C150 238 163 256 175 246 C178 212 190 180 200 152 C196 186 200 220 212 238 C198 262 190 294 194 328 C197 358 210 378 185 420Z" fill="#1144cc" fill-opacity="0.6"/>
+<path d="M185 420 C138 390 118 345 122 292 C126 260 140 234 158 210 C150 238 163 256 175 246 C178 212 190 180 200 152 C196 186 200 220 212 238 C198 262 190 294 194 328 C197 358 210 378 185 420Z" fill="none" stroke="#2266ff" stroke-width="3" opacity="0.7"/>
+
+<!-- 外炎・右 -->
+<path d="M327 420 C374 390 394 345 390 292 C386 260 372 234 354 210 C362 238 349 256 337 246 C334 212 322 180 312 152 C316 186 312 220 300 238 C314 262 322 294 318 328 C315 358 302 378 327 420Z" fill="#1144cc" fill-opacity="0.6"/>
+<path d="M327 420 C374 390 394 345 390 292 C386 260 372 234 354 210 C362 238 349 256 337 246 C334 212 322 180 312 152 C316 186 312 220 300 238 C314 262 322 294 318 328 C315 358 302 378 327 420Z" fill="none" stroke="#2266ff" stroke-width="3" opacity="0.7"/>
+
+<!-- メイン炎 -->
+<path d="M256 428 C208 400 182 354 188 294 C193 258 208 228 224 200 C218 228 228 246 238 238 C241 204 250 172 258 142 C255 174 259 208 272 224 C284 200 293 172 290 142 C304 172 312 220 308 268 C304 312 288 342 294 416 C278 374 264 342 256 428Z" fill="#2255dd"/>
+<path d="M256 428 C208 400 182 354 188 294 C193 258 208 228 224 200 C218 228 228 246 238 238 C241 204 250 172 258 142 C255 174 259 208 272 224 C284 200 293 172 290 142 C304 172 312 220 308 268 C304 312 288 342 294 416 C278 374 264 342 256 428Z" fill="none" stroke="#55aaff" stroke-width="4" opacity="0.9"/>
+
+<!-- 炎ハイライト -->
+<path d="M256 414 C230 388 216 356 221 318 C225 294 234 272 242 252 C239 272 246 286 252 278 C255 252 262 228 266 206 C264 230 267 256 274 268 C282 244 287 220 285 196 C295 224 299 262 296 300 C293 338 281 360 284 408 C273 374 264 348 256 414Z" fill="#4488ff"/>
+
+<!-- 炎コア -->
+<path d="M256 400 C236 372 226 342 231 306 C235 282 243 262 250 244 C247 266 253 280 258 272 C261 248 266 226 269 208 C268 230 270 254 275 264 C281 242 284 220 282 198 C291 224 294 256 291 290 C288 324 278 344 281 396 C271 364 263 340 256 400Z" fill="#88ccff"/>
+
+<!-- 先端ハイライト -->
+<ellipse cx="252" cy="210" rx="14" ry="36" fill="white" fill-opacity="0.35" transform="rotate(-10 252 210)"/>
+
+<!-- オレンジコア -->
+<ellipse cx="256" cy="390" rx="62" ry="42" fill="url(#coreGlow)"/>
+
+<!-- グラフ矢印 -->
+<polyline points="168,398 210,358 242,382 278,322 318,280" fill="none" stroke="#001133" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+<polyline points="168,398 210,358 242,382 278,322 318,280" fill="none" stroke="white" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M312,270 L344,252 L334,290 Z" fill="white"/>
+<circle cx="168" cy="398" r="9" fill="white" opacity="0.9"/>
+<circle cx="210" cy="358" r="9" fill="white" opacity="0.9"/>
+<circle cx="242" cy="382" r="9" fill="white" opacity="0.9"/>
+<circle cx="278" cy="322" r="9" fill="white" opacity="0.9"/>
+<circle cx="210" cy="358" r="14" fill="none" stroke="#00aaff" stroke-width="3" opacity="0.8"/>
+<circle cx="278" cy="322" r="14" fill="none" stroke="#00aaff" stroke-width="3" opacity="0.8"/>
+</svg>
