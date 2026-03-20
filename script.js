@@ -108,25 +108,33 @@ function addTrainingRow(preset) {
   updateDistance();
 }
 
-// 食事写真プレビュー
+// 食事写真プレビュー（画像はセッション中のみ保持・保存しない）
+let currentFoodImageBase64 = null;
+let currentFoodImageType = null;
+
 document.getElementById('foodPhoto').addEventListener('change', function () {
   const file = this.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = e => {
-    document.getElementById('previewImg').src = e.target.result;
+    const dataUrl = e.target.result;
+    // セッション変数に保持（localStorageには保存しない）
+    currentFoodImageBase64 = dataUrl.split(',')[1];
+    currentFoodImageType = dataUrl.match(/data:(image\/\w+)/)?.[1] || 'image/jpeg';
+    document.getElementById('previewImg').src = dataUrl;
     document.getElementById('photoPreview').style.display = 'block';
+    document.getElementById('aiResult').style.display = 'none';
   };
   reader.readAsDataURL(file);
 });
 
 // AI食事分析
 async function analyzeFood() {
-  const img = document.getElementById('previewImg').src;
-  if (!img) return;
+  if (!currentFoodImageBase64) {
+    showToast('⚠️ 写真を選択してください');
+    return;
+  }
   openModal('aiLoading');
-  const base64 = img.split(',')[1];
-  const mediaType = img.match(/data:(image\/\w+)/)?.[1] || 'image/jpeg';
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -135,7 +143,7 @@ async function analyzeFood() {
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,
         messages: [{ role: 'user', content: [
-          { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
+          { type: 'image', source: { type: 'base64', media_type: currentFoodImageType, data: currentFoodImageBase64 } },
           { type: 'text', text: 'この食事の写真を見て、各料理の名前と推定カロリーを日本語で答えてください。最後に合計カロリーを「合計: XXXkcal」の形式で書いてください。簡潔に箇条書きで。' }
         ]}]
       })
@@ -143,18 +151,36 @@ async function analyzeFood() {
     const data = await res.json();
     const text = data.content?.find(c => c.type === 'text')?.text || '分析できませんでした';
     closeModal('aiLoading');
+
+    // 結果表示（編集可能）
     const aiResult = document.getElementById('aiResult');
     aiResult.style.display = 'block';
-    aiResult.innerHTML = `<strong>🤖 AI分析結果</strong><br><br>${text.replace(/\n/g, '<br>')}`;
+    document.getElementById('aiResultText').innerHTML = `<strong>🤖 AI分析結果</strong><br><br>${text.replace(/\n/g, '<br>')}`;
+
+    // 合計カロリーを自動入力 + 編集欄にも反映
     const match = text.match(/合計[:：]\s*(\d+)\s*kcal/i);
     if (match) {
       document.getElementById('intake').value = match[1];
+      document.getElementById('aiCalorieEdit').value = match[1];
       showToast(`✅ ${match[1]}kcal を自動入力しました`);
+    } else {
+      document.getElementById('aiCalorieEdit').value = '';
     }
   } catch (e) {
     closeModal('aiLoading');
     showToast('❌ AI分析に失敗しました');
   }
+}
+
+// AI結果のカロリーを手動で修正して適用
+function applyAiCalorie() {
+  const val = document.getElementById('aiCalorieEdit').value;
+  if (!val || isNaN(val) || val <= 0) {
+    showToast('⚠️ 正しいカロリーを入力してください');
+    return;
+  }
+  document.getElementById('intake').value = val;
+  showToast(`✅ ${val}kcal に修正しました`);
 }
 
 // 保存

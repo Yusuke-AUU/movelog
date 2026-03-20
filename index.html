@@ -87,14 +87,23 @@
     <div class="photo-section">
       <div class="photo-label">📸 食事写真からカロリーをAI推定</div>
       <label class="photo-upload-btn">
-        📷 写真を選択
-        <input type="file" id="foodPhoto" accept="image/*" capture="environment" style="display:none">
+        🖼️ フォトライブラリから選択
+        <input type="file" id="foodPhoto" accept="image/*" style="display:none">
       </label>
       <div id="photoPreview" style="display:none;">
         <img id="previewImg" style="width:100%;border-radius:10px;margin-top:8px;">
         <button class="ai-analyze-btn" onclick="analyzeFood()">🤖 AIでカロリー計算</button>
       </div>
-      <div id="aiResult" class="ai-result" style="display:none;"></div>
+      <div id="aiResult" class="ai-result" style="display:none;">
+        <div id="aiResultText"></div>
+        <div class="ai-edit-row">
+          <label class="ai-edit-label">✏️ カロリーを修正</label>
+          <div class="ai-edit-input-row">
+            <input type="number" id="aiCalorieEdit" placeholder="kcal">
+            <button class="ai-apply-btn" onclick="applyAiCalorie()">✅ 適用</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
