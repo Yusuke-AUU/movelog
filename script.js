@@ -37,18 +37,20 @@ function closeModal(id) {
 }
 
 // ===== BMR / 基礎代謝計算（Mifflin-St Jeor） =====
+// 活動係数は×1.2固定（日常生活分のみ）
+// 運動カロリーは別途トレーニング入力で加算するため二重計上を防ぐ
 function calcBMR(weight) {
   const p = getProfile();
   const w = weight || parseFloat(document.getElementById('weight')?.value) || 70;
   const age = parseFloat(p.age) || 30;
   const height = parseFloat(p.height) || 170;
   const gender = p.gender || 'male';
-  const actLevel = parseFloat(p.activityLevel) || 1.55;
 
   let bmr = gender === 'male'
     ? 10 * w + 6.25 * height - 5 * age + 5
     : 10 * w + 6.25 * height - 5 * age - 161;
-  return Math.round(bmr * actLevel);
+  // 1.2 = 座位中心の日常生活分のみ（運動は別入力）
+  return Math.round(bmr * 1.2);
 }
 
 // ===== カロリー計算（MET × 体重 × 時間） =====
