@@ -4,47 +4,211 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>MoveLog</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <h1>🏃‍♂️ MoveLog</h1>
 
-  <div class="tabs">
-    <button class="tab-button" onclick="showTab('record')">📥 記録</button>
-    <button class="tab-button" onclick="showTab('calendar')">🗓 カレンダー</button>
-    <button class="tab-button" onclick="showTab('graph')">📊 グラフ</button>
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-inner">
+    <div class="splash-icon">🏃‍♂️</div>
+    <div class="splash-title">MOVELOG</div>
+    <div class="splash-sub">YOUR TRAINING JOURNAL</div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-left">
+    <span class="logo-text">MOVE<span class="logo-accent">LOG</span></span>
+  </div>
+  <div class="header-right">
+    <button class="icon-btn" onclick="openModal('profileModal')">👤</button>
+    <button class="icon-btn" onclick="exportCSV()">📤</button>
+  </div>
+</header>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" onclick="showTab('record')" id="nav-record">
+    <span class="nav-icon">📥</span><span class="nav-label">記録</span>
+  </button>
+  <button class="nav-btn" onclick="showTab('calendar')" id="nav-calendar">
+    <span class="nav-icon">🗓</span><span class="nav-label">カレンダー</span>
+  </button>
+  <button class="nav-btn" onclick="showTab('graph')" id="nav-graph">
+    <span class="nav-icon">📊</span><span class="nav-label">グラフ</span>
+  </button>
+  <button class="nav-btn" onclick="showTab('summary')" id="nav-summary">
+    <span class="nav-icon">📋</span><span class="nav-label">サマリー</span>
+  </button>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main>
+
+<!-- ===== 記録タブ ===== -->
+<div id="tab-record" class="tab-content active">
+  <div class="section-header">
+    <h2>TODAY'S LOG</h2>
+    <input type="date" id="date" class="date-input">
   </div>
 
-  <div id="record" class="tab-content">
-    <form id="recordForm">
-      <label>日付: <input type="date" id="date" required></label><br>
-      <label>体重 (kg): <input type="number" id="weight" step="0.1" required></label><br>
-      <label>摂取カロリー (kcal): <input type="number" id="intake" required></label><br><br>
-      <button type="button" id="addTraining">＋トレーニング追加</button><br><br>
-      <div id="trainingContainer"></div><br>
-      <button type="submit">記録を保存</button>
-    </form>
-    <h2>📊 今日のまとめ</h2>
-    <div id="summaryText" style="line-height: 1.6;"></div>
-  </div>
-
-  <div id="calendar" class="tab-content" style="display:none;">
-    <h2>🗓 記録カレンダー</h2>
-    <div id="calendarSelectors" style="margin-bottom: 10px;">
-      <label>年: <select id="yearSelect"></select></label>
-      <label>月: <select id="monthSelect"></select></label>
-      <button id="showCalendarButton">📅 カレンダー表示</button>
+  <!-- 目標バー -->
+  <div class="goal-bar-card" id="goalBarCard" style="display:none;">
+    <div class="goal-row">
+      <span>🎯 目標カロリー差</span>
+      <span id="goalBalanceText">-</span>
     </div>
-    <div id="calendarContainer" class="calendar"></div>
+    <div class="progress-track"><div class="progress-fill" id="goalProgress"></div></div>
   </div>
 
-  <div id="graph" class="tab-content" style="display:none;">
-    <h2>📈 グラフ表示</h2>
-    <canvas id="calorieChart"></canvas>
-    <canvas id="weightChart" style="margin-top: 30px;"></canvas>
+  <!-- 体重・カロリー -->
+  <div class="card">
+    <div class="card-title">BODY & FOOD</div>
+    <div class="input-grid">
+      <div class="input-group">
+        <label>体重 <span class="unit">kg</span></label>
+        <input type="number" id="weight" step="0.1" placeholder="70.0">
+      </div>
+      <div class="input-group">
+        <label>摂取カロリー <span class="unit">kcal</span></label>
+        <input type="number" id="intake" placeholder="2000">
+      </div>
+    </div>
+
+    <!-- 食事写真AIカロリー計算 -->
+    <div class="photo-section">
+      <div class="photo-label">📸 食事写真からカロリーをAI推定</div>
+      <label class="photo-upload-btn">
+        📷 写真を選択
+        <input type="file" id="foodPhoto" accept="image/*" capture="environment" style="display:none">
+      </label>
+      <div id="photoPreview" style="display:none;">
+        <img id="previewImg" style="width:100%;border-radius:10px;margin-top:8px;">
+        <button class="ai-analyze-btn" onclick="analyzeFood()">🤖 AIでカロリー計算</button>
+      </div>
+      <div id="aiResult" class="ai-result" style="display:none;"></div>
+    </div>
   </div>
 
-  <script src="script.js" defer></script>
+  <!-- トレーニング -->
+  <div class="card">
+    <div class="card-title-row">
+      <div class="card-title">TRAINING</div>
+      <button class="add-btn" id="addTraining">＋ 追加</button>
+    </div>
+    <div id="trainingContainer"></div>
+  </div>
+
+  <button class="save-btn" id="saveBtn">💾 記録を保存</button>
+
+  <!-- サマリー -->
+  <div class="card summary-card" id="summaryCard" style="display:none;">
+    <div class="card-title">TODAY'S SUMMARY</div>
+    <div id="summaryText"></div>
+  </div>
+</div>
+
+<!-- ===== カレンダータブ ===== -->
+<div id="tab-calendar" class="tab-content">
+  <div class="section-header">
+    <h2>CALENDAR</h2>
+    <div class="month-nav">
+      <button class="month-btn" onclick="changeMonth(-1)">‹</button>
+      <span id="monthLabel">2025年1月</span>
+      <button class="month-btn" onclick="changeMonth(1)">›</button>
+    </div>
+  </div>
+  <div class="weekday-row">
+    <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
+  </div>
+  <div id="calendarContainer" class="calendar"></div>
+</div>
+
+<!-- ===== グラフタブ ===== -->
+<div id="tab-graph" class="tab-content">
+  <div class="section-header"><h2>GRAPHS</h2></div>
+  <div class="graph-range">
+    <button class="range-btn active" onclick="setRange(7, this)">7日</button>
+    <button class="range-btn" onclick="setRange(30, this)">30日</button>
+    <button class="range-btn" onclick="setRange(90, this)">90日</button>
+  </div>
+  <div class="card"><canvas id="calorieChart"></canvas></div>
+  <div class="card"><canvas id="weightChart"></canvas></div>
+  <div class="card"><canvas id="balanceChart"></canvas></div>
+</div>
+
+<!-- ===== サマリータブ ===== -->
+<div id="tab-summary" class="tab-content">
+  <div class="section-header"><h2>SUMMARY</h2></div>
+  <div class="summary-toggle">
+    <button class="toggle-btn active" onclick="setSummaryRange('week', this)">今週</button>
+    <button class="toggle-btn" onclick="setSummaryRange('month', this)">今月</button>
+  </div>
+  <div id="summaryStats"></div>
+</div>
+
+</main>
+
+<!-- ===== プロフィールモーダル ===== -->
+<div id="profileModal" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <div class="modal-title">👤 プロフィール設定</div>
+    <div class="input-group"><label>名前</label><input type="text" id="profileName" placeholder="田中 雄介"></div>
+    <div class="input-group"><label>年齢</label><input type="number" id="profileAge" placeholder="30"></div>
+    <div class="input-group">
+      <label>性別</label>
+      <select id="profileGender">
+        <option value="male">男性</option>
+        <option value="female">女性</option>
+      </select>
+    </div>
+    <div class="input-group"><label>身長 (cm)</label><input type="number" id="profileHeight" placeholder="170"></div>
+    <div class="input-group"><label>活動レベル</label>
+      <select id="profileActivity">
+        <option value="1.2">座り仕事中心</option>
+        <option value="1.375">軽い運動（週1-3）</option>
+        <option value="1.55" selected>適度な運動（週3-5）</option>
+        <option value="1.725">激しい運動（週6-7）</option>
+        <option value="1.9">アスリート級</option>
+      </select>
+    </div>
+    <hr style="border-color:#333;margin:15px 0;">
+    <div class="modal-title">🎯 目標設定</div>
+    <div class="input-group"><label>目標体重 (kg)</label><input type="number" id="goalWeight" step="0.1" placeholder="65.0"></div>
+    <div class="input-group"><label>1日の目標カロリー差 (kcal)</label><input type="number" id="goalBalance" placeholder="-500（マイナスで減量）"></div>
+    <div class="input-group">
+      <div class="modal-title" style="margin-bottom:8px;">🏋️ カスタムトレーニング種目</div>
+      <div id="customActivitiesContainer"></div>
+      <button class="add-btn" onclick="addCustomActivity()" style="margin-top:8px;">＋ 種目追加</button>
+    </div>
+    <div class="modal-actions">
+      <button class="save-btn" onclick="saveProfile()">保存</button>
+      <button class="cancel-btn" onclick="closeModal('profileModal')">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 日詳細モーダル ===== -->
+<div id="detailModal" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <div id="detailContent"></div>
+    <button class="cancel-btn" onclick="closeModal('detailModal')" style="margin-top:15px;">閉じる</button>
+  </div>
+</div>
+
+<!-- ===== AIローディング ===== -->
+<div id="aiLoading" class="modal-overlay" style="display:none;">
+  <div class="modal-box" style="text-align:center;">
+    <div class="ai-spinner">🤖</div>
+    <div style="margin-top:10px;color:#fff;">AIが食事を分析中...</div>
+  </div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
