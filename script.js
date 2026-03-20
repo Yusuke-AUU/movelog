@@ -136,19 +136,17 @@ async function analyzeFood() {
   }
   openModal('aiLoading');
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    // Netlify Functionを経由してAPIを呼び出す（CORS・APIキー漏洩を防ぐ）
+    const res = await fetch('/.netlify/functions/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: [
-          { type: 'image', source: { type: 'base64', media_type: currentFoodImageType, data: currentFoodImageBase64 } },
-          { type: 'text', text: 'この食事の写真を見て、各料理の名前と推定カロリーを日本語で答えてください。最後に合計カロリーを「合計: XXXkcal」の形式で書いてください。簡潔に箇条書きで。' }
-        ]}]
+        imageBase64: currentFoodImageBase64,
+        mediaType: currentFoodImageType
       })
     });
     const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'APIエラー');
     const text = data.content?.find(c => c.type === 'text')?.text || '分析できませんでした';
     closeModal('aiLoading');
 
