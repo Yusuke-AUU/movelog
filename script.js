@@ -35,10 +35,11 @@ function calcBMR(weight) {
   const age = parseFloat(p.age) || 30;
   const height = parseFloat(p.height) || 170;
   const gender = p.gender || 'male';
+  const actLevel = parseFloat(p.activityLevel) || 1.2; // 日常生活分のみ（運動は別入力）
   let bmr = gender === 'male'
     ? 10 * w + 6.25 * height - 5 * age + 5
     : 10 * w + 6.25 * height - 5 * age - 161;
-  return Math.round(bmr * 1.2);
+  return Math.round(bmr * actLevel);
 }
 
 // ===== 運動カロリー計算（MET × 体重 × 時間） =====
@@ -440,7 +441,7 @@ function loadProfileForm() {
   if (p.age) document.getElementById('profileAge').value = p.age;
   if (p.gender) document.getElementById('profileGender').value = p.gender;
   if (p.height) document.getElementById('profileHeight').value = p.height;
-  // 【修正1】profileActivity参照を削除（UI上に存在しないため）
+  if (p.activityLevel) document.getElementById('profileActivity').value = p.activityLevel;
   if (g.weight) document.getElementById('goalWeight').value = g.weight;
   if (g.balance) document.getElementById('goalBalance').value = g.balance;
   renderCustomActivitiesForm();
@@ -452,7 +453,7 @@ function saveProfile() {
     age: document.getElementById('profileAge').value,
     gender: document.getElementById('profileGender').value,
     height: document.getElementById('profileHeight').value,
-    // 【修正1】activityLevelは固定のため保存不要
+    activityLevel: document.getElementById('profileActivity').value,
   };
   const goal = {
     weight: document.getElementById('goalWeight').value,
@@ -472,6 +473,43 @@ function saveProfile() {
   localStorage.setItem('customActivities', JSON.stringify(customActivities));
   closeModal('profileModal');
   showToast('✅ プロフィールを保存しました');
+}
+
+// ===== プロフィール写真 =====
+function initProfilePhoto() {
+  const input = document.getElementById('profilePhotoInput');
+  if (!input) return;
+  input.addEventListener('change', function () {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const dataUrl = e.target.result;
+      // localStorageに保存（写真は小さいのでOK）
+      localStorage.setItem('profilePhoto', dataUrl);
+      applyProfilePhoto(dataUrl);
+    };
+    reader.readAsDataURL(file);
+  });
+  // 既存写真を読み込み
+  const saved = localStorage.getItem('profilePhoto');
+  if (saved) applyProfilePhoto(saved);
+}
+
+function applyProfilePhoto(dataUrl) {
+  // モーダル内プレビュー
+  const img = document.getElementById('profilePhotoImg');
+  const icon = document.getElementById('profilePhotoIcon');
+  if (img && icon) {
+    img.src = dataUrl;
+    img.style.display = 'block';
+    icon.style.display = 'none';
+  }
+  // ヘッダーアイコンを写真に差し替え
+  const headerBtn = document.querySelector('[onclick="openModal('profileModal')"]');
+  if (headerBtn) {
+    headerBtn.innerHTML = `<img class="header-profile-icon" src="${dataUrl}">`;
+  }
 }
 
 function renderCustomActivitiesForm() {
@@ -532,4 +570,5 @@ document.addEventListener('DOMContentLoaded', () => {
     overlay.addEventListener('click', e => { if (e.target === overlay) overlay.style.display = 'none'; });
   });
   loadRecordForDate(today); // 今日のデータを読み込み
+  initProfilePhoto(); // プロフィール写真を初期化
 });
