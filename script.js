@@ -505,10 +505,18 @@ function applyProfilePhoto(dataUrl) {
     img.style.display = 'block';
     icon.style.display = 'none';
   }
-  // ヘッダーアイコンを写真に差し替え
-  const headerBtn = document.querySelector('[onclick="openModal('profileModal')"]');
+  // ヘッダーアイコン：onclickを壊さずimg要素だけ差し替え
+  const headerBtn = document.getElementById('profileIconBtn');
   if (headerBtn) {
-    headerBtn.innerHTML = `<img class="header-profile-icon" src="${dataUrl}">`;
+    // 既存のimg or テキストをクリアしてimgを挿入
+    let existingImg = headerBtn.querySelector('img.header-profile-icon');
+    if (!existingImg) {
+      existingImg = document.createElement('img');
+      existingImg.className = 'header-profile-icon';
+      headerBtn.textContent = '';
+      headerBtn.appendChild(existingImg);
+    }
+    existingImg.src = dataUrl;
   }
 }
 
